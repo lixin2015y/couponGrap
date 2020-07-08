@@ -1,15 +1,19 @@
 package com.lee.schedule;
 
 import com.lee.service.CouponGrab;
+import com.sun.prism.ps.Shader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import javax.xml.ws.spi.http.HttpHandler;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.concurrent.CompletableFuture;
@@ -53,11 +57,18 @@ public class GrabJob {
     public void grab() {
         String id = LocalDateTime.now().getHour() < 12 ? morningId : afternoonId;
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(8);
+//        final String USER_AGENT = "Dalvik/2.1.0 (Linux; U; Android 9; PCNM00 Build/PKQ1.190630.001)";
+        final String USER_AGENT = "okhttp/3.14.0";
+//        final String USER_IDENTIFY = "APP/com.tj.zgnews;1.0.15 SYS/Android;28 SDI/06989818d36dae350cdab9250f416eb71d113c37 FM/OPPO;PCNM00 NE/wifi;46002 Lang/zh_CN CLV/20200422 SDK/SHARESDK;30702;0,SMSSDK;30201;0 DC/2";
+        String url = "http://tjzgh.bohaigaoke.com/union/mobile/eleme/getTicket/"
+                + id + ".jhtml?mobile=15022401101";
         executor.scheduleAtFixedRate(() -> CompletableFuture.runAsync(() -> {
             HttpHeaders headers = new HttpHeaders();
-            headers.set("User-Agent", "Dalvik/2.1.0 (Linux; U; Android 9; PCNM00 Build/PKQ1.190630.001)");
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity("http://tjzgh.bohaigaoke.com/union/mobile/eleme/getTicket/"
-                    + id + ".jhtml?mobile=15022401101", String.class, headers);
+            headers.add(HttpHeaders.USER_AGENT, USER_AGENT);
+//            headers.set("User-Identity",USER_IDENTIFY);
+            headers.add(HttpHeaders.HOST,"tjzgh.bohaigaoke.com");
+            HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
             String body = responseEntity.getBody();
             boolean isExceedMorningTime = LocalTime.now().isAfter(LocalTime.parse("11:15:00")) && LocalTime.now().isBefore(LocalTime.parse("11:30:00"));
             boolean isExceedAfternoonTime = LocalTime.now().isAfter(LocalTime.parse("17:15:00")) && LocalTime.now().isBefore(LocalTime.parse("17:30:00"));
@@ -66,7 +77,6 @@ public class GrabJob {
                 logger.info("shutdown");
                 executor.shutdown();
             }
-
         }), 0, 100, TimeUnit.MILLISECONDS);
     }
 }
