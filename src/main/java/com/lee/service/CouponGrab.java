@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * 知工优惠券抢券
  * //http://tjzgh.bohaigaoke.com/union/mobile/eleme/caseList.jhtml?mobile=
- * //http://tjzgh.bohaigaoke.com/union/mobile/eleme/getTicket/c29316faad974ee7821fb88e797172e3.jhtml?mobile=15022401101
+ * //http://tjzgh.bohaigaoke.com/union/mobile/eleme/getTicket/edc6c0ad86bd438f8799a45acea793a2.jhtml?mobile=15022401101
  */
 public class CouponGrab {
 
