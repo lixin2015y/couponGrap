@@ -51,7 +51,7 @@ public class GrabJob {
     }
 
     // 抢券
-    @Scheduled(cron = "59 59 10,16 * * ?")
+    @Scheduled(cron = "55 59 10,16 * * ?")
     public void grab() {
         String id = LocalDateTime.now().getHour() < 12 ? morningId : afternoonId;
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(8);
@@ -59,7 +59,7 @@ public class GrabJob {
         String url = "http://tjzgh.bohaigaoke.com/union/mobile/eleme/getTicket/"
                 + id + ".jhtml?mobile=18622938608";
         String url2 = "http://tjzgh.bohaigaoke.com/union/mobile/eleme/getTicket/"
-                + id + ".jhtml?mobile=18622938608";
+                + id + ".jhtml?mobile=15022401101";
         executor.scheduleAtFixedRate(() -> CompletableFuture.runAsync(() -> {
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.USER_AGENT, USER_AGENT);
@@ -76,7 +76,7 @@ public class GrabJob {
                 logger.info("shutdown");
                 executor.shutdown();
             }
-        }), 0, 300, TimeUnit.MILLISECONDS);
+        }), 0, 100, TimeUnit.MILLISECONDS);
     }
 
 }
