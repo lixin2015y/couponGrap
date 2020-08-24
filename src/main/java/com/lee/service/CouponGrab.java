@@ -1,12 +1,8 @@
 package com.lee.service;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -27,7 +23,7 @@ public class CouponGrab {
         RestTemplate restTemplate = new RestTemplate();
 
 
-        ResponseEntity<Map> idMap = restTemplate.getForEntity("http://tjzgh.bohaigaoke.com/union/mobile/eleme/caseList.jhtml?mobile=", Map.class);
+        ResponseEntity<Map> idMap = restTemplate.getForEntity("http://tjzgh.bohaigaoke.com/union/mobile/eleme/caseList.jhtml?mobile=15022401101", Map.class);
 
         if (!idMap.getStatusCode().toString().contains("200")) {
             return null;

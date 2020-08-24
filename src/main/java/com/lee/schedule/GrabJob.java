@@ -58,25 +58,47 @@ public class GrabJob {
         final String USER_AGENT = "okhttp/3.14.0";
         String url = "http://tjzgh.bohaigaoke.com/union/mobile/eleme/getTicket/"
                 + id + ".jhtml?mobile=18622938608";
-        String url2 = "http://tjzgh.bohaigaoke.com/union/mobile/eleme/getTicket/"
-                + id + ".jhtml?mobile=15022401101";
         executor.scheduleAtFixedRate(() -> CompletableFuture.runAsync(() -> {
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.USER_AGENT, USER_AGENT);
             headers.add(HttpHeaders.HOST,"tjzgh.bohaigaoke.com");
             HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
             ResponseEntity<String> body1 = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
-            ResponseEntity<String> body2 = restTemplate.exchange(url2, HttpMethod.GET, requestEntity, String.class);
             String body = body1.getBody();
             logger.info(body);
-            logger.info(body2.getBody());
             boolean isExceedMorningTime = LocalTime.now().isAfter(LocalTime.parse("11:00:03")) && LocalTime.now().isBefore(LocalTime.parse("11:30:00"));
             boolean isExceedAfternoonTime = LocalTime.now().isAfter(LocalTime.parse("17:00:03")) && LocalTime.now().isBefore(LocalTime.parse("17:30:00"));
             if (isExceedMorningTime || isExceedAfternoonTime) {
                 logger.info("shutdown");
                 executor.shutdown();
             }
-        }), 0, 100, TimeUnit.MILLISECONDS);
+        }), 0, 300, TimeUnit.MILLISECONDS);
     }
+
+    // 抢券
+    @Scheduled(cron = "56 59 10,16 * * ?")
+    public void grab2() {
+        String id = LocalDateTime.now().getHour() < 12 ? morningId : afternoonId;
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(8);
+        final String USER_AGENT = "okhttp/3.14.0";
+        String url2 = "http://tjzgh.bohaigaoke.com/union/mobile/eleme/getTicket/"
+                + id + ".jhtml?mobile=15022401101";
+        executor.scheduleAtFixedRate(() -> CompletableFuture.runAsync(() -> {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.USER_AGENT, USER_AGENT);
+            headers.add(HttpHeaders.HOST, "tjzgh.bohaigaoke.com");
+            HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
+            ResponseEntity<String> body2 = restTemplate.exchange(url2, HttpMethod.GET, requestEntity, String.class);
+            String body = body2.getBody();
+            logger.info(body);
+            boolean isExceedMorningTime = LocalTime.now().isAfter(LocalTime.parse("11:00:03")) && LocalTime.now().isBefore(LocalTime.parse("11:30:00"));
+            boolean isExceedAfternoonTime = LocalTime.now().isAfter(LocalTime.parse("17:00:03")) && LocalTime.now().isBefore(LocalTime.parse("17:30:00"));
+            if (isExceedMorningTime || isExceedAfternoonTime) {
+                logger.info("shutdown");
+                executor.shutdown();
+            }
+        }), 0, 300, TimeUnit.MILLISECONDS);
+    }
+
 
 }
