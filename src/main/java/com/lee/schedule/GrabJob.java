@@ -72,7 +72,7 @@ public class GrabJob {
                 logger.info("shutdown");
                 executor.shutdown();
             }
-        }), 0, 300, TimeUnit.MILLISECONDS);
+        }), 0, 100, TimeUnit.MILLISECONDS);
     }
 
     // 抢券
@@ -97,7 +97,7 @@ public class GrabJob {
                 logger.info("shutdown");
                 executor.shutdown();
             }
-        }), 0, 300, TimeUnit.MILLISECONDS);
+        }), 0, 100, TimeUnit.MILLISECONDS);
     }
 
 
